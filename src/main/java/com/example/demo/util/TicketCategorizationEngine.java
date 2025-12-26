@@ -14,19 +14,16 @@ public class TicketCategorizationEngine {
             List<UrgencyPolicy> policies,
             List<CategorizationLog> logs) {
 
-        boolean categoryAssigned = false;
-
-        // 1️⃣ Sort rules by priority DESC
-        rules.sort(Comparator.comparing(CategorizationRule::getPriority).reversed());
-
+        boolean assigned = false;
         String text = (ticket.getTitle() + " " + ticket.getDescription()).toLowerCase();
 
-        // 2️⃣ Apply categorization rules
-        for (CategorizationRule rule : rules) {
-            if (categoryAssigned) break;
+        rules.sort(Comparator.comparing(CategorizationRule::getPriority).reversed());
 
-            String keyword = rule.getKeyword().toLowerCase();
+        for (CategorizationRule rule : rules) {
+            if (assigned) break;
+
             boolean match = false;
+            String keyword = rule.getKeyword().toLowerCase();
 
             if ("CONTAINS".equalsIgnoreCase(rule.getMatchType())) {
                 match = text.contains(keyword);
@@ -46,18 +43,16 @@ public class TicketCategorizationEngine {
                 log.setAssignedCategory(rule.getCategory());
 
                 logs.add(log);
-                categoryAssigned = true;
+                assigned = true;
             }
         }
 
-        // 3️⃣ Apply urgency policy override
         for (UrgencyPolicy policy : policies) {
             if (text.contains(policy.getKeyword().toLowerCase())) {
                 ticket.setUrgencyLevel(policy.getUrgencyOverride());
             }
         }
 
-        // 4️⃣ Default urgency
         if (ticket.getUrgencyLevel() == null) {
             ticket.setUrgencyLevel("LOW");
         }

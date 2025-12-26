@@ -17,7 +17,6 @@ public class CategorizationLog {
     private CategorizationRule appliedRule;
 
     private String matchedKeyword;
-
     private String assignedUrgency;
 
     @ManyToOne
@@ -30,29 +29,11 @@ public class CategorizationLog {
         loggedAt = LocalDateTime.now();
     }
 
-    // ===== REQUIRED SETTERS (ENGINE USES THESE) =====
+    public void setTicket(Ticket ticket) { this.ticket = ticket; }
+    public void setAppliedRule(CategorizationRule appliedRule) { this.appliedRule = appliedRule; }
+    public void setMatchedKeyword(String matchedKeyword) { this.matchedKeyword = matchedKeyword; }
+    public void setAssignedUrgency(String assignedUrgency) { this.assignedUrgency = assignedUrgency; }
+    public void setAssignedCategory(Category assignedCategory) { this.assignedCategory = assignedCategory; }
 
-    public void setTicket(Ticket ticket) {
-        this.ticket = ticket;
-    }
-
-    public void setAppliedRule(CategorizationRule appliedRule) {
-        this.appliedRule = appliedRule;
-    }
-
-    public void setMatchedKeyword(String matchedKeyword) {
-        this.matchedKeyword = matchedKeyword;
-    }
-
-    public void setAssignedUrgency(String assignedUrgency) {
-        this.assignedUrgency = assignedUrgency;
-    }
-
-    public void setAssignedCategory(Category assignedCategory) {
-        this.assignedCategory = assignedCategory;
-    }
-
-    public Long getId() {
-        return id;
-    }
+    public Long getId() { return id; }
 }
