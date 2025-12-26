@@ -3,9 +3,11 @@ package com.example.demo.service.impl;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.Category;
 import com.example.demo.repository.CategoryRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class CategoryServiceImpl {
 
     private final CategoryRepository categoryRepository;
@@ -20,8 +22,7 @@ public class CategoryServiceImpl {
 
     public Category getCategory(Long id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Category not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Category not found"));
     }
 
     public List<Category> getAllCategories() {
