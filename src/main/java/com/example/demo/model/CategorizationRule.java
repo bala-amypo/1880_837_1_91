@@ -11,17 +11,52 @@ public class CategorizationRule {
 
     private String keyword;
 
+    private String matchType;   // EXACT name used in engine
+
     private int priority;
 
-    // ===== REQUIRED BY TESTCASES =====
+    @ManyToOne
+    private Category category;
+
+    // ===== REQUIRED GETTERS / SETTERS =====
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getKeyword() {            // 🔥 REQUIRED
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public String getMatchType() {           // 🔥 REQUIRED
+        return matchType;
+    }
+
+    public void setMatchType(String matchType) {
+        this.matchType = matchType;
+    }
 
     public int getPriority() {
         return priority;
     }
 
-    public void setPriority(int priority) {   // 🔥 REQUIRED
+    public void setPriority(int priority) { // 🔥 REQUIRED
         this.priority = priority;
     }
 
-    // existing getters/setters ok
+    public Category getCategory() {          // 🔥 REQUIRED
+        return category;
+    }
+
+    public void setCategory(Category category) { // 🔥 REQUIRED
+        this.category = category;
+    }
 }

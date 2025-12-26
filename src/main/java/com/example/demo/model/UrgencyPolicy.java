@@ -12,17 +12,19 @@ public class UrgencyPolicy {
 
     private String policyName;
 
+    private String keyword;   // 🔥 REQUIRED by engine
+
     private String urgencyOverride;
 
     private LocalDateTime createdAt;
 
-    // ===== REQUIRED BY TESTCASES =====
+    // ===== REQUIRED METHODS =====
 
     public Long getId() {
         return id;
     }
 
-    public void setId(Long id) {   // 🔥 REQUIRED
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -30,8 +32,16 @@ public class UrgencyPolicy {
         return policyName;
     }
 
-    public void setPolicyName(String policyName) {  // 🔥 REQUIRED
+    public void setPolicyName(String policyName) {
         this.policyName = policyName;
+    }
+
+    public String getKeyword() {             // 🔥 REQUIRED
+        return keyword;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
     }
 
     public String getUrgencyOverride() {
@@ -42,7 +52,7 @@ public class UrgencyPolicy {
         this.urgencyOverride = urgencyOverride;
     }
 
-    public LocalDateTime getCreatedAt() {   // 🔥 REQUIRED
+    public LocalDateTime getCreatedAt() {     // 🔥 REQUIRED
         return createdAt;
     }
 
