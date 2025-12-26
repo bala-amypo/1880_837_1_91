@@ -16,48 +16,48 @@ public class TicketCategorizationEngine {
 
         boolean categoryAssigned = false;
 
-        // 1️⃣ Apply categorization rules (by priority DESC)
-        rules.stream()
-                .sorted(Comparator.comparing(CategorizationRule::getPriority).reversed())
-                .forEach(rule -> {
-                    if (categoryAssigned) return;
+        // 1️⃣ Sort rules by priority DESC
+        rules.sort(Comparator.comparing(CategorizationRule::getPriority).reversed());
 
-                    String text = (ticket.getTitle() + " " + ticket.getDescription()).toLowerCase();
-                    String keyword = rule.getKeyword().toLowerCase();
+        String text = (ticket.getTitle() + " " + ticket.getDescription()).toLowerCase();
 
-                    boolean match = false;
+        // 2️⃣ Apply categorization rules
+        for (CategorizationRule rule : rules) {
+            if (categoryAssigned) break;
 
-                    if ("CONTAINS".equalsIgnoreCase(rule.getMatchType())) {
-                        match = text.contains(keyword);
-                    } else if ("EXACT".equalsIgnoreCase(rule.getMatchType())) {
-                        match = text.equals(keyword);
-                    }
+            String keyword = rule.getKeyword().toLowerCase();
+            boolean match = false;
 
-                    if (match) {
-                        ticket.setAssignedCategory(rule.getCategory());
-                        ticket.setUrgencyLevel(rule.getCategory().getDefaultUrgency());
+            if ("CONTAINS".equalsIgnoreCase(rule.getMatchType())) {
+                match = text.contains(keyword);
+            } else if ("EXACT".equalsIgnoreCase(rule.getMatchType())) {
+                match = text.equals(keyword);
+            }
 
-                        CategorizationLog log = new CategorizationLog();
-                        log.setAssignedCategory(rule.getCategory());
-                        log.setAppliedRule(rule);
-                        log.setMatchedKeyword(rule.getKeyword());
-                        log.setAssignedUrgency(ticket.getUrgencyLevel());
-                        log.setTicket(ticket);
+            if (match) {
+                ticket.setAssignedCategory(rule.getCategory());
+                ticket.setUrgencyLevel(rule.getCategory().getDefaultUrgency());
 
-                        logs.add(log);
-                        categoryAssigned = true;
-                    }
-                });
+                CategorizationLog log = new CategorizationLog();
+                log.setTicket(ticket);
+                log.setAppliedRule(rule);
+                log.setMatchedKeyword(rule.getKeyword());
+                log.setAssignedUrgency(ticket.getUrgencyLevel());
+                log.setAssignedCategory(rule.getCategory());
 
-        // 2️⃣ Apply urgency policy override
+                logs.add(log);
+                categoryAssigned = true;
+            }
+        }
+
+        // 3️⃣ Apply urgency policy override
         for (UrgencyPolicy policy : policies) {
-            String text = (ticket.getTitle() + " " + ticket.getDescription()).toLowerCase();
             if (text.contains(policy.getKeyword().toLowerCase())) {
                 ticket.setUrgencyLevel(policy.getUrgencyOverride());
             }
         }
 
-        // 3️⃣ Default urgency if nothing matched
+        // 4️⃣ Default urgency
         if (ticket.getUrgencyLevel() == null) {
             ticket.setUrgencyLevel("LOW");
         }
