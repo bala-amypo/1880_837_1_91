@@ -1,10 +1,12 @@
 package com.example.demo.util;
 
 import com.example.demo.model.*;
+import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
 
+@Component   // 🔥 THIS IS THE FIX
 public class TicketCategorizationEngine {
 
     public void categorize(
