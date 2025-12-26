@@ -4,10 +4,12 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.*;
 import com.example.demo.repository.*;
 import com.example.demo.util.TicketCategorizationEngine;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class CategorizationEngineServiceImpl {
 
     private final TicketRepository ticketRepository;
@@ -35,8 +37,7 @@ public class CategorizationEngineServiceImpl {
 
     public Ticket categorizeTicket(Long ticketId) {
         Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Ticket not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
 
         List<Category> categories = categoryRepository.findAll();
         List<CategorizationRule> rules = ruleRepository.findAll();
@@ -58,7 +59,6 @@ public class CategorizationEngineServiceImpl {
 
     public CategorizationLog getLog(Long id) {
         return logRepository.findById(id)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Log not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Log not found"));
     }
 }
