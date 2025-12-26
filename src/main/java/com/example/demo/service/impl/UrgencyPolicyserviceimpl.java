@@ -1,22 +1,30 @@
 package com.example.demo.service.impl;
+
+import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.model.UrgencyPolicy;
-import com.example.demo.service.impl.UrgencyPolicyservice;
-import com.example.demo.repository.UrgencyPolicyrepo;
-import org.springframework.stereotype.Service;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.repository.UrgencyPolicyRepository;
+
 import java.util.List;
 
-@Service
-public class UrgencyPolicyserviceimpl implements UrgencyPolicyservice{
-    @Autowired
-    UrgencyPolicyrepo obj;
-    public UrgencyPolicy createPolicy(UrgencyPolicy policy){
-        return  obj.save(policy);
+public class UrgencyPolicyServiceImpl {
+
+    private final UrgencyPolicyRepository policyRepository;
+
+    public UrgencyPolicyServiceImpl(UrgencyPolicyRepository policyRepository) {
+        this.policyRepository = policyRepository;
     }
-    public List<UrgencyPolicy> getAllpolicies(){
-        return obj.findAll();
+
+    public UrgencyPolicy createPolicy(UrgencyPolicy policy) {
+        return policyRepository.save(policy);
     }
-    public UrgencyPolicy getPolicy(Long id){
-        return obj.findById(id).orElse(null);
+
+    public UrgencyPolicy getPolicy(Long id) {
+        return policyRepository.findById(id)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Policy not found"));
+    }
+
+    public List<UrgencyPolicy> getAllPolicies() {
+        return policyRepository.findAll();
     }
 }
