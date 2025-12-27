@@ -12,11 +12,22 @@ public class CategorizationRule {
 
     private String keyword;
 
-    private String matchType; // EXACT / CONTAINS
+    private String matchType;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+
+    // ✅ NO-ARG constructor (JPA mandatory)
+    public CategorizationRule() {
+    }
+
+    // ✅ PARAMETERIZED constructor (YOUR ERROR FIX)
+    public CategorizationRule(String keyword, String matchType, Category category) {
+        this.keyword = keyword;
+        this.matchType = matchType;
+        this.category = category;
+    }
 
     // ===== GETTERS =====
 
