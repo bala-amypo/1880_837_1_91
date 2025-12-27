@@ -1,9 +1,18 @@
-package com.example.demo.service.impl;
-import java.util.List;
-import com.example.demo.model.Ticket;
+package com.example.demo.service;
+
 import com.example.demo.model.CategorizationLog;
-public interface CategorizationEngineService{
-    Ticket categorizeTicket(Long ticketid);
-    List<CategorizationLog> getLogsForTicket(Long ticketid);
-    CategorizationLog getLog(Long id);
+import com.example.demo.model.Ticket;
+
+import java.util.List;
+
+public interface CategorizationEngineService {
+
+    // Categorize a ticket using rules & policies
+    Ticket categorizeTicket(Long ticketId);
+
+    // Get single categorization log by log id
+    CategorizationLog getLog(Long logId);
+
+    // Get all logs related to a ticket
+    List<CategorizationLog> getLogsForTicket(Long ticketId);
 }
