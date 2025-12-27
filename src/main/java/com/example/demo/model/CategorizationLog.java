@@ -1,38 +1,56 @@
 package com.example.demo.model;
 
-import java.time.LocalDateTime;
+import jakarta.persistence.*;
 
-public class CategorizationLog {
+@Entity
+@Table(name = "categorization_rule")
+public class CategorizationRule {
 
-    private static long counter = 1;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-    private Long id = counter++;
-    private Long ticketId;
+    private String keyword;
+
+    private String matchType; // EXACT / CONTAINS
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
     private Category category;
-    private String urgency;
-    private LocalDateTime createdAt;
+
+    // ===== GETTERS =====
 
     public Long getId() {
         return id;
     }
 
-    public Long getTicketId() {
-        return ticketId;
+    public String getKeyword() {
+        return keyword;
     }
 
-    public void setTicketId(Long ticketId) {
-        this.ticketId = ticketId;
+    public String getMatchType() {
+        return matchType;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    // ===== SETTERS =====
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setKeyword(String keyword) {
+        this.keyword = keyword;
+    }
+
+    public void setMatchType(String matchType) {
+        this.matchType = matchType;
     }
 
     public void setCategory(Category category) {
         this.category = category;
-    }
-
-    public void setUrgency(String urgency) {
-        this.urgency = urgency;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 }
