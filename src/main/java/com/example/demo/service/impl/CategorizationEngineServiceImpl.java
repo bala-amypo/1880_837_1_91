@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CategorizationEngineServiceImpl implements CategorizationEngineService {
@@ -17,60 +18,61 @@ public class CategorizationEngineServiceImpl implements CategorizationEngineServ
     private final CategorizationRuleRepository ruleRepository;
     private final UrgencyPolicyRepository urgencyPolicyRepository;
     private final CategorizationLogRepository logRepository;
-    private final TicketCategorizationEngine engine;
 
     public CategorizationEngineServiceImpl(
             TicketRepository ticketRepository,
             CategoryRepository categoryRepository,
             CategorizationRuleRepository ruleRepository,
             UrgencyPolicyRepository urgencyPolicyRepository,
-            CategorizationLogRepository logRepository,
-            TicketCategorizationEngine engine
-    ) {
+            CategorizationLogRepository logRepository) {
+
         this.ticketRepository = ticketRepository;
         this.categoryRepository = categoryRepository;
         this.ruleRepository = ruleRepository;
         this.urgencyPolicyRepository = urgencyPolicyRepository;
         this.logRepository = logRepository;
-        this.engine = engine;
     }
 
     @Override
-    public Ticket categorizeTicket(Long ticketId) {
+    public CategorizationResult categorizeTicket(Long ticketId) {
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
 
         List<CategorizationRule> rules = ruleRepository.findAll();
+        List<UrgencyPolicy> policies = urgencyPolicyRepository.findAll();
 
-        // engine returns category + urgency
-        CategorizationResult result =
-                engine.categorize(ticket.getDescription(), rules);
+        // ✅ Category calculate
+        Category category = TicketCategorizationEngine
+                .categorize(ticket.getDescription(), rules);
 
-        // set values to ticket
-        ticket.setAssignedCategory(result.getCategory());
-        ticket.setUrgencyLevel(result.getUrgency());
+        // ✅ Urgency calculate
+        String urgency = TicketCategorizationEngine
+                .determineUrgency(ticket.getDescription(), policies);
 
+        // ✅ Ticket update (CORRECT setters)
+        ticket.setCategory(category);
+        ticket.setUrgency(urgency);
         ticketRepository.save(ticket);
 
-        // create log
+        // ✅ Log save
         CategorizationLog log = new CategorizationLog();
-        log.setTicket(ticket); // ✅ IMPORTANT (NO ticketId)
-        log.setCategory(result.getCategory());
-        log.setUrgency(result.getUrgency());
+        log.setTicketId(ticket.getId());
+        log.setCategory(category);
+        log.setUrgency(urgency);
         log.setCreatedAt(LocalDateTime.now());
-
         logRepository.save(log);
 
-        return ticket;
+        // ✅ RETURN RESULT OBJECT
+        return new CategorizationResult(category, urgency);
     }
 
     @Override
     public List<CategorizationLog> getLogsForTicket(Long ticketId) {
         return logRepository.findAll()
                 .stream()
-                .filter(l -> l.getTicket().getId().equals(ticketId))
-                .toList();
+                .filter(l -> l.getTicketId().equals(ticketId))
+                .collect(Collectors.toList());
     }
 
     @Override
