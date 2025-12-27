@@ -24,7 +24,6 @@ public class CategorizationLog {
     private LocalDateTime createdAt;
 
     // ===== GETTERS =====
-
     public Long getId() {
         return id;
     }
@@ -46,7 +45,6 @@ public class CategorizationLog {
     }
 
     // ===== SETTERS =====
-
     public void setId(Long id) {
         this.id = id;
     }
