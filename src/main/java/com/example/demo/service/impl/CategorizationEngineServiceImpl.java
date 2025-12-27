@@ -14,27 +14,24 @@ import java.util.stream.Collectors;
 public class CategorizationEngineServiceImpl implements CategorizationEngineService {
 
     private final TicketRepository ticketRepository;
-    private final CategoryRepository categoryRepository;
     private final CategorizationRuleRepository ruleRepository;
     private final UrgencyPolicyRepository urgencyPolicyRepository;
     private final CategorizationLogRepository logRepository;
 
     public CategorizationEngineServiceImpl(
             TicketRepository ticketRepository,
-            CategoryRepository categoryRepository,
             CategorizationRuleRepository ruleRepository,
             UrgencyPolicyRepository urgencyPolicyRepository,
             CategorizationLogRepository logRepository) {
 
         this.ticketRepository = ticketRepository;
-        this.categoryRepository = categoryRepository;
         this.ruleRepository = ruleRepository;
         this.urgencyPolicyRepository = urgencyPolicyRepository;
         this.logRepository = logRepository;
     }
 
     @Override
-    public CategorizationResult categorizeTicket(Long ticketId) {
+    public Ticket categorizeTicket(Long ticketId) {
 
         Ticket ticket = ticketRepository.findById(ticketId)
                 .orElseThrow(() -> new RuntimeException("Ticket not found"));
@@ -42,20 +39,16 @@ public class CategorizationEngineServiceImpl implements CategorizationEngineServ
         List<CategorizationRule> rules = ruleRepository.findAll();
         List<UrgencyPolicy> policies = urgencyPolicyRepository.findAll();
 
-        // ✅ Category calculate
         Category category = TicketCategorizationEngine
                 .categorize(ticket.getDescription(), rules);
 
-        // ✅ Urgency calculate
         String urgency = TicketCategorizationEngine
                 .determineUrgency(ticket.getDescription(), policies);
 
-        // ✅ Ticket update (CORRECT setters)
         ticket.setCategory(category);
         ticket.setUrgency(urgency);
         ticketRepository.save(ticket);
 
-        // ✅ Log save
         CategorizationLog log = new CategorizationLog();
         log.setTicketId(ticket.getId());
         log.setCategory(category);
@@ -63,8 +56,7 @@ public class CategorizationEngineServiceImpl implements CategorizationEngineServ
         log.setCreatedAt(LocalDateTime.now());
         logRepository.save(log);
 
-        // ✅ RETURN RESULT OBJECT
-        return new CategorizationResult(category, urgency);
+        return ticket;
     }
 
     @Override
