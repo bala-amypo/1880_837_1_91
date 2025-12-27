@@ -1,13 +1,28 @@
 package com.example.demo.controller;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import com.example.demo.dto.AuthResponse;
+import com.example.demo.model.User;
+import com.example.demo.service.impl.UserServiceImpl;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
+@RequestMapping("/auth")
 public class AuthController {
 
-    @GetMapping("/login")
-    public String login() {
-        return "LOGIN API WORKING ✅";
+    private final UserServiceImpl userService;
+
+    public AuthController(UserServiceImpl userService) {
+        this.userService = userService;
+    }
+
+    @PostMapping("/register")
+    public User register(@RequestBody User user) {
+        return userService.register(user);
+    }
+
+    @PostMapping("/login")
+    public AuthResponse login() {
+        // Dummy login (Swagger run purpose only)
+        return new AuthResponse("dummy-token", 1L, "user@demo.com", "USER");
     }
 }
