@@ -1,33 +1,42 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Category;
-import com.example.demo.service.impl.CategoryServiceImpl;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.example.demo.model.Category;
+import com.example.demo.service.CategoryService;
 
 @RestController
 @RequestMapping("/api/categories")
 public class CategoryController {
 
-    private final CategoryServiceImpl categoryService;
+    private final CategoryService categoryService;
 
-    public CategoryController(CategoryServiceImpl categoryService) {
+    public CategoryController(CategoryService categoryService) {
         this.categoryService = categoryService;
     }
 
+    // ✅ ADMIN only – create category
     @PostMapping
-    public Category create(@RequestBody Category category) {
-        return categoryService.createCategory(category);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Category> create(@RequestBody Category category) {
+        return ResponseEntity.ok(categoryService.createCategory(category));
     }
 
-    @GetMapping("/{id}")
-    public Category get(@PathVariable Long id) {
-        return categoryService.getCategory(id);
-    }
-
+    // ✅ ADMIN only – get all categories
     @GetMapping
-    public List<Category> getAll() {
-        return categoryService.getAllCategories();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Category>> getAll() {
+        return ResponseEntity.ok(categoryService.getAllCategories());
+    }
+
+    // ✅ ADMIN only – get category by id
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Category> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(categoryService.getCategory(id));
     }
 }

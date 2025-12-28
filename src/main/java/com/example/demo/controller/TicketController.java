@@ -1,33 +1,42 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.Ticket;
-import com.example.demo.service.impl.TicketServiceImpl;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.example.demo.model.Ticket;
+import com.example.demo.service.TicketService;
 
 @RestController
 @RequestMapping("/api/tickets")
 public class TicketController {
 
-    private final TicketServiceImpl ticketService;
+    private final TicketService ticketService;
 
-    public TicketController(TicketServiceImpl ticketService) {
+    public TicketController(TicketService ticketService) {
         this.ticketService = ticketService;
     }
 
+    // ✅ USER can raise ticket
     @PostMapping
-    public Ticket create(@RequestBody Ticket ticket) {
-        return ticketService.createTicket(ticket);
+    @PreAuthorize("hasRole('USER')")
+    public ResponseEntity<Ticket> create(@RequestBody Ticket ticket) {
+        return ResponseEntity.ok(ticketService.createTicket(ticket));
     }
 
-    @GetMapping("/{id}")
-    public Ticket get(@PathVariable Long id) {
-        return ticketService.getTicket(id);
-    }
-
+    // ✅ ADMIN can view all tickets
     @GetMapping
-    public List<Ticket> getAll() {
-        return ticketService.getAllTickets();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<Ticket>> getAll() {
+        return ResponseEntity.ok(ticketService.getAllTickets());
+    }
+
+    // ✅ ADMIN can view any ticket
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Ticket> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(ticketService.getTicket(id));
     }
 }

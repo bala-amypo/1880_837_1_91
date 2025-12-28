@@ -1,28 +1,42 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.UrgencyPolicy;
-import com.example.demo.service.impl.UrgencyPolicyServiceImpl;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import com.example.demo.model.UrgencyPolicy;
+import com.example.demo.service.UrgencyPolicyService;
 
 @RestController
 @RequestMapping("/api/policies")
 public class UrgencyPolicyController {
 
-    private final UrgencyPolicyServiceImpl policyService;
+    private final UrgencyPolicyService policyService;
 
-    public UrgencyPolicyController(UrgencyPolicyServiceImpl policyService) {
+    public UrgencyPolicyController(UrgencyPolicyService policyService) {
         this.policyService = policyService;
     }
 
+    // ✅ ADMIN only – create urgency policy
     @PostMapping
-    public UrgencyPolicy create(@RequestBody UrgencyPolicy policy) {
-        return policyService.createPolicy(policy);
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UrgencyPolicy> create(@RequestBody UrgencyPolicy policy) {
+        return ResponseEntity.ok(policyService.createPolicy(policy));
     }
 
+    // ✅ ADMIN only – view all policies
     @GetMapping
-    public List<UrgencyPolicy> getAll() {
-        return policyService.getAllPolicies();
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<UrgencyPolicy>> getAll() {
+        return ResponseEntity.ok(policyService.getAllPolicies());
+    }
+
+    // ✅ ADMIN only – view policy by id
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<UrgencyPolicy> getById(@PathVariable Long id) {
+        return ResponseEntity.ok(policyService.getPolicy(id));
     }
 }
