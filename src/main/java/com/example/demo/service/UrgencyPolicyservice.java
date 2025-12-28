@@ -1,8 +1,11 @@
-package com.example.demo.service.impl;
-import com.example.demo.model.UrgencyPolicy;
+package com.example.demo.service;
+
 import java.util.List;
-public interface UrgencyPolicyservice{
-    public UrgencyPolicy createPolicy(UrgencyPolicy policy);
-    public List<UrgencyPolicy> getAllpolicies();
-    public UrgencyPolicy getPolicy(Long id);
+
+import com.example.demo.model.UrgencyPolicy;
+
+public interface UrgencyPolicyService {
+    UrgencyPolicy createPolicy(UrgencyPolicy policy);
+    UrgencyPolicy getPolicy(Long id);
+    List<UrgencyPolicy> getAllPolicies();
 }
