@@ -1,9 +1,13 @@
 package com.example.demo.model;
 
+import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "categorization_rule")
+@Table(name = "categorization_rules")
 public class CategorizationRule {
 
     @Id
@@ -11,57 +15,47 @@ public class CategorizationRule {
     private Long id;
 
     private String keyword;
-
     private String matchType;
+    private Integer priority;
+
+    private LocalDateTime createdAt;
 
     @ManyToOne
+    // @JsonIgnore
     @JoinColumn(name = "category_id")
     private Category category;
 
-    // ✅ NO-ARG constructor (JPA mandatory)
-    public CategorizationRule() {
-    }
+    public CategorizationRule() {}
 
-    // ✅ PARAMETERIZED constructor (YOUR ERROR FIX)
-    public CategorizationRule(String keyword, String matchType, Category category) {
+    public CategorizationRule(String keyword, String matchType, Integer priority) {
         this.keyword = keyword;
         this.matchType = matchType;
-        this.category = category;
+        this.priority = priority;
     }
 
-    // ===== GETTERS =====
-
-    public Long getId() {
-        return id;
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        if (this.priority == null) {
+            this.priority = 1;
+        }
     }
 
-    public String getKeyword() {
-        return keyword;
-    }
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
 
-    public String getMatchType() {
-        return matchType;
-    }
+    public String getKeyword() { return keyword; }
+    public void setKeyword(String keyword) { this.keyword = keyword; }
 
-    public Category getCategory() {
-        return category;
-    }
+    public String getMatchType() { return matchType; }
+    public void setMatchType(String matchType) { this.matchType = matchType; }
 
-    // ===== SETTERS =====
+    public Integer getPriority() { return priority; }
+    public void setPriority(Integer priority) { this.priority = priority; }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    public Category getCategory() { return category; }
+    public void setCategory(Category category) { this.category = category; }
 
-    public void setKeyword(String keyword) {
-        this.keyword = keyword;
-    }
-
-    public void setMatchType(String matchType) {
-        this.matchType = matchType;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }

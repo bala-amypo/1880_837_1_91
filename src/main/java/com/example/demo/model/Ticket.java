@@ -1,8 +1,12 @@
 package com.example.demo.model;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "tickets")
 public class Ticket {
 
     @Id
@@ -10,18 +14,51 @@ public class Ticket {
     private Long id;
 
     private String title;
-
     private String description;
+    private String location;
+    private String createdBy;
+    private String urgencyLevel;
+
+    private LocalDateTime createdAt;
 
     @ManyToOne
-    private Category category;
+    @JoinColumn(name = "category_id")
+    private Category assignedCategory;
 
-    private String urgency;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    // ===== getters & setters =====
+    @OneToMany(mappedBy = "ticket")
+    private List<CategorizationLog> logs;
+
+    // ✅ No-args constructor
+    public Ticket() {}
+
+    // ✅ Parameterized constructor
+    public Ticket(String title, String description, String location, String createdBy) {
+        this.title = title;
+        this.description = description;
+        this.location = location;
+        this.createdBy = createdBy;
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.createdAt = LocalDateTime.now();
+        if (this.urgencyLevel == null) {
+            this.urgencyLevel = "LOW";
+        }
+    }
+
+    // ===== GETTERS & SETTERS =====
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getTitle() {
@@ -40,19 +77,59 @@ public class Ticket {
         this.description = description;
     }
 
-    public Category getCategory() {
-        return category;
+    public String getLocation() {
+        return location;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setLocation(String location) {
+        this.location = location;
     }
 
-    public String getUrgency() {
-        return urgency;
+    public String getCreatedBy() {
+        return createdBy;
     }
 
-    public void setUrgency(String urgency) {
-        this.urgency = urgency;
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+    public String getUrgencyLevel() {
+        return urgencyLevel;
+    }
+
+    public void setUrgencyLevel(String urgencyLevel) {
+        this.urgencyLevel = urgencyLevel;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public Category getAssignedCategory() {
+        return assignedCategory;
+    }
+
+    public void setAssignedCategory(Category assignedCategory) {
+        this.assignedCategory = assignedCategory;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public List<CategorizationLog> getLogs() {
+        return logs;
+    }
+
+    public void setLogs(List<CategorizationLog> logs) {
+        this.logs = logs;
     }
 }
